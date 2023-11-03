@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import Navbar from './Navbar';
+import { useNavigate } from 'react-router-dom';
 
 
 function Dashboard() {
@@ -9,6 +10,9 @@ function Dashboard() {
     const [user, setUser] = useState([]);
     const [token, setToken] = useState('');
     const [expire, setExpire] = useState('');
+    const [loggedIn, setLoggedIn] = useState(false);
+
+    const navigate = useNavigate();
 
 
     const refreshToken = useCallback(async () => {
@@ -18,10 +22,11 @@ function Dashboard() {
             const decoded = jwtDecode(response.data.accessToken);
             setName(decoded.name);
             setExpire(decoded.exp);
+            setLoggedIn(true); 
         } catch (error) {
-            console.log('error refreshing token..');
+            setLoggedIn(false); 
         }
-    }, []);
+    }, [navigate]);
 
     const axiosJWT = axios.create();
     axiosJWT.interceptors.request.use(async (config) => {
@@ -51,8 +56,10 @@ function Dashboard() {
 
     useEffect(() => {
         refreshToken();
-    }, [refreshToken]);
-
+        if (!loggedIn) {
+            return navigate('/login', { state: { message: "Anda harus login terlebih dahulu!" } });
+        }
+    }, [refreshToken, loggedIn]);
 
     return (
         <>

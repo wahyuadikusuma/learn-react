@@ -1,13 +1,20 @@
 import axios from 'axios';
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [msg, setMsg] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const message = location.state && location.state.message;
 
+  useEffect(() => {
+    if ({message}) {
+      setMsg(message);
+    }
+  });
 
   const handleLogin = async (e) => {
     await axios.post('http://localhost:5000/login', {
